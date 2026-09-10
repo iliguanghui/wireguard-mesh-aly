@@ -1,0 +1,40 @@
+# ==============================================================================
+# 变量覆盖示例文件 (terraform.tfvars.example)
+# ==============================================================================
+# 如需自定义变量，可将本文件复制为 `terraform.tfvars`：
+#   cp terraform.tfvars.example terraform.tfvars
+#
+# 注意：terraform.tfvars 已被 .gitignore 忽略，切勿提交敏感信息至代码库。
+# ==============================================================================
+
+# 项目名称前缀
+project_name = "mesh"
+
+# 地域自定义（可选，通常保留默认）
+region_hangzhou = "cn-hangzhou"
+region_shanghai = "cn-shanghai"
+region_shenzhen = "cn-shenzhen"
+
+# VPC 网段（三个地域均使用该网段）
+vpc_cidr_block = "192.168.0.0/16"
+
+# 各地域子网网段
+vswitch_cidr_hangzhou = "192.168.10.0/24"
+vswitch_cidr_shanghai = "192.168.20.0/24"
+vswitch_cidr_shenzhen = "192.168.30.0/24"
+
+# SSH 公钥字符串内容（默认已在 variables.tf 中配置，亦可在此或 HCP Terraform 中覆盖）
+# ssh_public_key = "ssh-rsa AAAAB3NzaC1yc2E..."
+
+# ECS 实例规格（默认选用高性价比经济型 e 规格）
+instance_type = "ecs.e-c1m1.large"
+
+# 抢占式竞价策略（SpotAsPriceGo：自动跟随市场价竞价获得最大折扣）
+spot_strategy = "SpotAsPriceGo"
+
+# 系统盘类型与容量（最便宜的 ESSD Entry 20GB）
+system_disk_category = "cloud_essd_entry"
+system_disk_size     = 20
+
+# 系统自动分配公网 IP 出网带宽上限 (Mbps，按流量计费)
+internet_max_bandwidth_out = 5
