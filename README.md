@@ -18,6 +18,7 @@
 ├── main.tf                  # 核心资源编排 (网络、路由、安全组、密钥对、Fedora ECS)
 ├── outputs.tf               # 定义执行成功后的输出信息 (各资源 ID、公网 IP 与 SSH 登录命令)
 ├── terraform.tfvars.example # 变量覆盖样例文件
+├── WIREGUARD_MESH.md        # WireGuard 全互联跨地域跨 VPC 组网实战指南
 └── README.md                # 学习与操作指南
 ```
 
