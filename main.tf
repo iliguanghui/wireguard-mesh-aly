@@ -149,6 +149,12 @@ resource "alicloud_instance" "hangzhou" {
   internet_max_bandwidth_out = var.internet_max_bandwidth_out
   key_name                   = alicloud_key_pair.hangzhou.id
   description                = "Managed by Terraform - Hangzhou Spot Fedora ECS (Spot Interruption Stop Mode)"
+  user_data = base64encode(<<-EOT
+              #!/bin/bash
+              curl -fsSL https://gitlab.com/liguanghui/ecs-metadata/-/raw/main/ecs-metadata -o /usr/local/bin/ecs-metadata
+              chmod a+x /usr/local/bin/ecs-metadata
+              EOT
+  )
 }
 
 # ==============================================================================
@@ -283,6 +289,12 @@ resource "alicloud_instance" "shanghai" {
   internet_max_bandwidth_out = var.internet_max_bandwidth_out
   key_name                   = alicloud_key_pair.shanghai.id
   description                = "Managed by Terraform - Shanghai Spot Fedora ECS (Spot Interruption Stop Mode)"
+  user_data = base64encode(<<-EOT
+              #!/bin/bash
+              curl -fsSL https://gitlab.com/liguanghui/ecs-metadata/-/raw/main/ecs-metadata -o /usr/local/bin/ecs-metadata
+              chmod a+x /usr/local/bin/ecs-metadata
+              EOT
+  )
 }
 
 # ==============================================================================
@@ -417,4 +429,10 @@ resource "alicloud_instance" "shenzhen" {
   internet_max_bandwidth_out = var.internet_max_bandwidth_out
   key_name                   = alicloud_key_pair.shenzhen.id
   description                = "Managed by Terraform - Shenzhen Spot Fedora ECS (Spot Interruption Stop Mode)"
+  user_data = base64encode(<<-EOT
+              #!/bin/bash
+              curl -fsSL https://gitlab.com/liguanghui/ecs-metadata/-/raw/main/ecs-metadata -o /usr/local/bin/ecs-metadata
+              chmod a+x /usr/local/bin/ecs-metadata
+              EOT
+  )
 }
