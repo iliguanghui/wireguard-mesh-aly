@@ -99,7 +99,7 @@ terraform validate
 terraform plan
 ```
 
-在终端输出中，你将看到预计纳管 **54 个云端资源**（每地域 18 个资源：VPC、VSwitch、IPv4 网关、IPv6 网关、IPv6 出网带宽、自定义路由表、交换机绑定、默认公网路由、2 条跨地域引流路由、安全组、2 条 IPv4 安全组规则、2 条 IPv6 安全组规则、SSH 密钥对、WireGuard 网关 ECS、测试 ECS）。
+在终端输出中，你将看到预计纳管 **57 个云端资源**（每地域 19 个资源：VPC、VSwitch、IPv4 网关、IPv6 网关、IPv6 出网带宽、自定义路由表、交换机绑定、默认 IPv4 公网路由、默认 IPv6 公网路由、2 条跨地域引流路由、安全组、2 条 IPv4 安全组规则、2 条 IPv6 安全组规则、SSH 密钥对、WireGuard 网关 ECS、测试 ECS）。
 
 ---
 

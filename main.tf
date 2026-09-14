@@ -10,7 +10,7 @@
 # 4. 安全出入与路由控制：
 #    - IPv4 网关 (alicloud_vpc_ipv4_gateway 集中控制模式)
 #    - IPv6 网关与公网带宽 (alicloud_vpc_ipv6_gateway / alicloud_vpc_ipv6_internet_bandwidth)
-#    - 自定义公共路由表 (默认公网路由 + 跨地域 VPC 子网下一跳指向 WireGuard 网关 ECS)
+#    - 自定义公共路由表 (默认 IPv4/IPv6 公网路由 + 跨地域 VPC 子网下一跳指向 WireGuard 网关 ECS)
 # 5. 全通安全组 (alicloud_security_group / alicloud_security_group_rule): 放通一切 IPv4 与 IPv6 协议端口。
 # 6. 本地 SSH 密钥导入 (alicloud_key_pair): 导入本地 /Users/admin/.ssh/id_rsa.pub。
 # 7. 计算层架构：
@@ -92,6 +92,15 @@ resource "alicloud_route_entry" "hangzhou" {
   destination_cidrblock = "0.0.0.0/0"
   nexthop_type          = "Ipv4Gateway"
   nexthop_id            = alicloud_vpc_ipv4_gateway.hangzhou.id
+}
+
+# 在公共路由表中增加指向 IPv6 网关的默认公网路由
+resource "alicloud_route_entry" "hangzhou_ipv6_default" {
+  provider              = alicloud.hangzhou
+  route_table_id        = alicloud_route_table.hangzhou.id
+  destination_cidrblock = "::/0"
+  nexthop_type          = "IPv6Gateway"
+  nexthop_id            = alicloud_vpc_ipv6_gateway.hangzhou.ipv6_gateway_id
 }
 
 # 跨地域 VPC 路由：发往上海子网的数据包引流至杭州 WireGuard 网关 ECS
@@ -333,6 +342,15 @@ resource "alicloud_route_entry" "shanghai" {
   nexthop_id            = alicloud_vpc_ipv4_gateway.shanghai.id
 }
 
+# 在公共路由表中增加指向 IPv6 网关的默认公网路由
+resource "alicloud_route_entry" "shanghai_ipv6_default" {
+  provider              = alicloud.shanghai
+  route_table_id        = alicloud_route_table.shanghai.id
+  destination_cidrblock = "::/0"
+  nexthop_type          = "IPv6Gateway"
+  nexthop_id            = alicloud_vpc_ipv6_gateway.shanghai.ipv6_gateway_id
+}
+
 # 跨地域 VPC 路由：发往杭州子网的数据包引流至上海 WireGuard 网关 ECS
 resource "alicloud_route_entry" "shanghai_to_hangzhou" {
   provider              = alicloud.shanghai
@@ -570,6 +588,15 @@ resource "alicloud_route_entry" "shenzhen" {
   destination_cidrblock = "0.0.0.0/0"
   nexthop_type          = "Ipv4Gateway"
   nexthop_id            = alicloud_vpc_ipv4_gateway.shenzhen.id
+}
+
+# 在公共路由表中增加指向 IPv6 网关的默认公网路由
+resource "alicloud_route_entry" "shenzhen_ipv6_default" {
+  provider              = alicloud.shenzhen
+  route_table_id        = alicloud_route_table.shenzhen.id
+  destination_cidrblock = "::/0"
+  nexthop_type          = "IPv6Gateway"
+  nexthop_id            = alicloud_vpc_ipv6_gateway.shenzhen.ipv6_gateway_id
 }
 
 # 跨地域 VPC 路由：发往杭州子网的数据包引流至深圳 WireGuard 网关 ECS
