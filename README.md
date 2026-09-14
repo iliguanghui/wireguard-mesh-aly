@@ -1,9 +1,11 @@
 # Terraform 阿里云多地域 VPC、全通安全组与极低成本 Fedora ECS 实战指南
 
 本项目是一个专为 Terraform 学习者打造的生产级实战工程，展示了如何在阿里云的三个地域（**杭州**、**上海**、**深圳**）通过声明式代码自动创建：
-1. **网络层**：专有网络（VPC）、交换机（VSwitch）、**IPv4 网关（集中控制模式）**以及**自定义公共路由表**（默认路由指向网关）。
-2. **安全层**：各地域独立的**全通安全组**（放通一切入出端口与协议），导入本地 SSH 公钥。
-3. **计算层**：极低成本的**抢占式 Fedora ECS 实例**（**节省停机中断模式**、**ESSD Entry 20GB 系统盘**、**自动分配公网 IP**，按流量计费）。
+1. **网络层**：专有网络（VPC，开启 IPv6 双栈）、交换机（VSwitch，分配 IPv6 子网）、**IPv4 网关（集中控制模式）**、**IPv6 网关与公网出网带宽**，以及**自定义公共路由表**（默认路由指向 IPv4 网关，跨地域子网下一跳指向本地 WireGuard 网关）。
+2. **安全层**：各地域独立的**全通安全组**（放通一切 IPv4 与 IPv6 进出端口协议），导入本地 SSH 公钥。
+3. **计算层**：
+   - **WireGuard 网关 ECS 实例**：极低成本抢占式实例（**节省停机中断模式**、**ESSD Entry 20GB 系统盘**、**自动分配公网 IPv4 + 公网 IPv6**，按流量计费）。
+   - **子网测试 ECS 实例**：每地域各 1 台（不分配 IPv6），用于验证跨地域透明内网 IPv4 互相访问。
 
 ---
 
@@ -11,26 +13,27 @@
 
 ```text
 .
-├── .gitignore               # 忽略本地状态文件、插件缓存和敏感变量
-├── versions.tf              # 声明 Terraform 版本及 alicloud provider 依赖
-├── providers.tf             # 配置多地域 Provider 别名 (Alias)
-├── variables.tf             # 声明入参变量 (地域代码、网段 CIDR、实例规格、SSH 密钥等)
-├── main.tf                  # 核心资源编排 (网络、路由、安全组、密钥对、Fedora ECS)
-├── outputs.tf               # 定义执行成功后的输出信息 (各资源 ID、公网 IP 与 SSH 登录命令)
-├── terraform.tfvars.example # 变量覆盖样例文件
-├── WIREGUARD_MESH.md        # WireGuard 全互联跨地域跨 VPC 组网实战指南
-└── README.md                # 学习与操作指南
+├── .gitignore                # 忽略本地状态文件、插件缓存和敏感变量
+├── versions.tf               # 声明 Terraform 版本及 alicloud provider 依赖
+├── providers.tf              # 配置多地域 Provider 别名 (Alias)
+├── variables.tf              # 声明入参变量 (地域代码、网段 CIDR、实例规格、SSH 密钥、IPv6 带宽等)
+├── main.tf                   # 核心资源编排 (网络、路由、安全组、密钥对、网关与测试 ECS)
+├── outputs.tf                # 定义执行成功后的输出信息 (各资源 ID、公网 IP、IPv6、测试机登录命令)
+├── terraform.tfvars.example  # 变量覆盖样例文件
+├── WIREGUARD_MESH.md         # WireGuard 全互联跨地域跨 VPC 组网实战指南 (IPv4 Underlay)
+├── WIREGUARD_IPV6_GATEWAY.md # WireGuard 4-over-6 全互联跨地域 VPC 站点对站点网关实战指南 (IPv6 Underlay)
+└── README.md                 # 学习与操作指南
 ```
 
 ---
 
 ## 资源规划与网络拓扑
 
-| 地域 | 地域代码 (`region`) | VPC 网段 | 子网 (VSwitch) 网段 | 可用区策略 | 实例系统 | 计费与磁盘配置 | 公网 IP 模式 |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **杭州** | `cn-hangzhou` | `192.168.0.0/16` | `192.168.10.0/24` | 动态协同过滤 (Spot + ESSD Entry) | 最新 Fedora x86_64 | 抢占式 (`SpotAsPriceGo` + 节省停机) + 20G ESSD Entry | 自动分配 (`PayByTraffic`) |
-| **上海** | `cn-shanghai` | `192.168.0.0/16` | `192.168.20.0/24` | 动态协同过滤 (Spot + ESSD Entry) | 最新 Fedora x86_64 | 抢占式 (`SpotAsPriceGo` + 节省停机) + 20G ESSD Entry | 自动分配 (`PayByTraffic`) |
-| **深圳** | `cn-shenzhen` | `192.168.0.0/16` | `192.168.30.0/24` | 动态协同过滤 (Spot + ESSD Entry) | 最新 Fedora x86_64 | 抢占式 (`SpotAsPriceGo` + 节省停机) + 20G ESSD Entry | 自动分配 (`PayByTraffic`) |
+| 地域 | 地域代码 (`region`) | VPC 网段 | 子网 (VSwitch) 网段 | 可用区策略 | 网关实例配置 (WG Gateway) | 测试机配置 (Test Instance) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **杭州** | `cn-hangzhou` | `192.168.0.0/16` | `192.168.10.0/24` | 动态过滤 (Spot+ESSD Entry) | 抢占式 + 20G ESSD + IPv4/IPv6 双公网 | 抢占式 + 20G ESSD + 仅公网 IPv4 |
+| **上海** | `cn-shanghai` | `192.168.0.0/16` | `192.168.20.0/24` | 动态过滤 (Spot+ESSD Entry) | 抢占式 + 20G ESSD + IPv4/IPv6 双公网 | 抢占式 + 20G ESSD + 仅公网 IPv4 |
+| **深圳** | `cn-shenzhen` | `192.168.0.0/16` | `192.168.30.0/24` | 动态过滤 (Spot+ESSD Entry) | 抢占式 + 20G ESSD + IPv4/IPv6 双公网 | 抢占式 + 20G ESSD + 仅公网 IPv4 |
 
 ---
 
@@ -52,6 +55,7 @@
 ### 3. 系统自动分配公网 IP (按流量计费)
 - 无需为每台实例单独采购或绑定固定 EIP。
 - 通过在 `alicloud_instance` 中配置 `internet_charge_type = "PayByTraffic"` 与 `internet_max_bandwidth_out = 5`，阿里云会在创建时自动向实例主网卡分配一个公网 IPv4 地址。
+- 网关实例额外分配公网 IPv6 地址并开通按量计费公网出网带宽（`alicloud_vpc_ipv6_internet_bandwidth`）。
 - 仅在有实际网络出网流量时产生按量费用（测试期间几乎为 0 元）。
 
 ### 4. 智能协同可用区过滤 (`data "alicloud_instance_types"`)
@@ -95,7 +99,7 @@ terraform validate
 terraform plan
 ```
 
-在终端输出中，你将看到预计新增 **33 个云端资源**（每地域 11 个：VPC、VSwitch、IPv4 网关、路由表、路由条目、交换机绑定、安全组、安全组入规则、安全组出规则、SSH 密钥对、抢占式 ECS 实例）。
+在终端输出中，你将看到预计纳管 **54 个云端资源**（每地域 18 个资源：VPC、VSwitch、IPv4 网关、IPv6 网关、IPv6 出网带宽、自定义路由表、交换机绑定、默认公网路由、2 条跨地域引流路由、安全组、2 条 IPv4 安全组规则、2 条 IPv6 安全组规则、SSH 密钥对、WireGuard 网关 ECS、测试 ECS）。
 
 ---
 
