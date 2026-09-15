@@ -22,6 +22,7 @@
 ├── terraform.tfvars.example  # 变量覆盖样例文件
 ├── WIREGUARD_MESH.md         # WireGuard 全互联跨地域跨 VPC 组网实战指南 (IPv4 Underlay)
 ├── WIREGUARD_IPV6_GATEWAY.md # WireGuard 4-over-6 全互联跨地域 VPC 站点对站点网关实战指南 (IPv6 Underlay)
+├── WIREGUARD_MTU_TESTING.md  # WireGuard MTU 原理与实战测试指南 (ICMP Frag Needed 验证)
 └── README.md                 # 学习与操作指南
 ```
 

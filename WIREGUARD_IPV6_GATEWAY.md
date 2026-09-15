@@ -262,3 +262,6 @@ curl -I http://192.168.20.xxx:8080
   tcpdump -i eth0 ip6 and udp port 11111 -nn
   ```
   如果能看到杭州与上海/深圳之间的公网 IPv6 UDP 交互报文，说明 Underlay 通道通信完全正常。
+
+* **MTU 极限测试与 ICMP Fragmentation Needed 验证**：
+  有关 MTU 计算公式、1392 字节临界点测试、`Frag needed and DF set` 报错验证及 TCP MSS 钳制最佳实践，请参见独立文档：[WIREGUARD_MTU_TESTING.md](./WIREGUARD_MTU_TESTING.md)。
