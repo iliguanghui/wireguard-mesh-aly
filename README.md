@@ -21,6 +21,7 @@
 ├── outputs.tf                # 定义执行成功后的输出信息 (各资源 ID、公网 IP、IPv6、测试机登录命令)
 ├── terraform.tfvars.example  # 变量覆盖样例文件
 ├── WIREGUARD_MESH.md         # WireGuard 全互联跨地域跨 VPC 组网实战指南 (IPv4 Underlay)
+├── WIREGUARD_HUB_SPOKE_GATEWAY.md # WireGuard Hub & Spoke 星型集中出网与分支中转实战指南 (深圳中心+双级NAT)
 ├── WIREGUARD_IPV6_GATEWAY.md # WireGuard 4-over-6 全互联跨地域 VPC 站点对站点网关实战指南 (IPv6 Underlay)
 ├── WIREGUARD_MTU_TESTING.md  # WireGuard MTU 原理与实战测试指南 (ICMP Frag Needed 验证)
 ├── WIREGUARD_BGP_BFD_MESH_GUIDE.md # WireGuard + BIRD 3 (eBGP + BFD) 全自动故障自愈 Mesh 组网与排错手册
