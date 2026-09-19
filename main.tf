@@ -15,7 +15,6 @@
 # 6. 本地 SSH 密钥导入 (alicloud_key_pair): 导入本地 /Users/admin/.ssh/id_rsa.pub。
 # 7. 计算层架构：
 #    - WireGuard 网关 ECS：抢占式极低成本 + 节省停机 + ESSD Entry 20GB + 双公网 IPv4/IPv6
-#    - 子网测试 ECS：抢占式 + 仅公网 IPv4，用于验证跨地域透明内网互通
 # ==============================================================================
 
 # ==============================================================================
@@ -238,32 +237,6 @@ resource "alicloud_vpc_ipv6_internet_bandwidth" "hangzhou" {
   internet_charge_type = "PayByTraffic"
 }
 
-# 杭州子网测试 ECS 实例 (不分配 IPv6，分配公网 IPv4 用于 SSH 登录与跨地域互通测试)
-resource "alicloud_instance" "hangzhou_test" {
-  count                      = var.test_instance_count
-  provider                   = alicloud.hangzhou
-  instance_name              = "${var.project_name}-ecs-hangzhou-test-${count.index + 1}"
-  host_name                  = "fedora-hz-test-${count.index + 1}"
-  vswitch_id                 = alicloud_vswitch.hangzhou.id
-  security_groups            = [alicloud_security_group.hangzhou.id]
-  image_id                   = data.alicloud_images.fedora_hangzhou.images[0].id
-  instance_type              = var.instance_type
-  instance_charge_type       = "PostPaid"
-  spot_strategy              = var.spot_strategy
-  spot_interruption_behavior = "Stop"
-  system_disk_category       = var.system_disk_category
-  system_disk_size           = var.system_disk_size
-  internet_charge_type       = "PayByTraffic"
-  internet_max_bandwidth_out = var.internet_max_bandwidth_out
-  key_name                   = alicloud_key_pair.hangzhou.id
-  description                = "Managed by Terraform - Hangzhou Spot Fedora Test ECS (No IPv6)"
-  user_data = base64encode(<<-EOT
-              #!/bin/bash
-              curl -fsSL https://gitlab.com/liguanghui/ecs-metadata/-/raw/main/ecs-metadata -o /usr/local/bin/ecs-metadata
-              chmod a+x /usr/local/bin/ecs-metadata
-              EOT
-  )
-}
 
 
 # ==============================================================================
@@ -486,32 +459,6 @@ resource "alicloud_vpc_ipv6_internet_bandwidth" "shanghai" {
   internet_charge_type = "PayByTraffic"
 }
 
-# 上海子网测试 ECS 实例 (不分配 IPv6，分配公网 IPv4 用于 SSH 登录与跨地域互通测试)
-resource "alicloud_instance" "shanghai_test" {
-  count                      = var.test_instance_count
-  provider                   = alicloud.shanghai
-  instance_name              = "${var.project_name}-ecs-shanghai-test-${count.index + 1}"
-  host_name                  = "fedora-sh-test-${count.index + 1}"
-  vswitch_id                 = alicloud_vswitch.shanghai.id
-  security_groups            = [alicloud_security_group.shanghai.id]
-  image_id                   = data.alicloud_images.fedora_shanghai.images[0].id
-  instance_type              = var.instance_type
-  instance_charge_type       = "PostPaid"
-  spot_strategy              = var.spot_strategy
-  spot_interruption_behavior = "Stop"
-  system_disk_category       = var.system_disk_category
-  system_disk_size           = var.system_disk_size
-  internet_charge_type       = "PayByTraffic"
-  internet_max_bandwidth_out = var.internet_max_bandwidth_out
-  key_name                   = alicloud_key_pair.shanghai.id
-  description                = "Managed by Terraform - Shanghai Spot Fedora Test ECS (No IPv6)"
-  user_data = base64encode(<<-EOT
-              #!/bin/bash
-              curl -fsSL https://gitlab.com/liguanghui/ecs-metadata/-/raw/main/ecs-metadata -o /usr/local/bin/ecs-metadata
-              chmod a+x /usr/local/bin/ecs-metadata
-              EOT
-  )
-}
 
 
 # ==============================================================================
@@ -734,30 +681,4 @@ resource "alicloud_vpc_ipv6_internet_bandwidth" "shenzhen" {
   internet_charge_type = "PayByTraffic"
 }
 
-# 深圳子网测试 ECS 实例 (不分配 IPv6，分配公网 IPv4 用于 SSH 登录与跨地域互通测试)
-resource "alicloud_instance" "shenzhen_test" {
-  count                      = var.test_instance_count
-  provider                   = alicloud.shenzhen
-  instance_name              = "${var.project_name}-ecs-shenzhen-test-${count.index + 1}"
-  host_name                  = "fedora-sz-test-${count.index + 1}"
-  vswitch_id                 = alicloud_vswitch.shenzhen.id
-  security_groups            = [alicloud_security_group.shenzhen.id]
-  image_id                   = data.alicloud_images.fedora_shenzhen.images[0].id
-  instance_type              = var.instance_type
-  instance_charge_type       = "PostPaid"
-  spot_strategy              = var.spot_strategy
-  spot_interruption_behavior = "Stop"
-  system_disk_category       = var.system_disk_category
-  system_disk_size           = var.system_disk_size
-  internet_charge_type       = "PayByTraffic"
-  internet_max_bandwidth_out = var.internet_max_bandwidth_out
-  key_name                   = alicloud_key_pair.shenzhen.id
-  description                = "Managed by Terraform - Shenzhen Spot Fedora Test ECS (No IPv6)"
-  user_data = base64encode(<<-EOT
-              #!/bin/bash
-              curl -fsSL https://gitlab.com/liguanghui/ecs-metadata/-/raw/main/ecs-metadata -o /usr/local/bin/ecs-metadata
-              chmod a+x /usr/local/bin/ecs-metadata
-              EOT
-  )
-}
 

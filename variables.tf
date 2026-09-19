@@ -90,16 +90,10 @@ variable "internet_max_bandwidth_out" {
   default     = 5
 }
 
-# --- IPv6 与测试实例配置 ---
+# --- IPv6 网关公网带宽配置 ---
 
 variable "ipv6_internet_bandwidth" {
   type        = number
   description = "WireGuard 网关 ECS 实例分配的公网 IPv6 出网带宽上限 (Mbps)，按流量计费"
   default     = 5
-}
-
-variable "test_instance_count" {
-  type        = number
-  description = "每个地域子网内创建的测试 ECS 实例数量（不分配 IPv6，用于验证跨地域透明 IPv4 互通）"
-  default     = 1
 }

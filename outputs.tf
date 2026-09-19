@@ -62,16 +62,6 @@ output "hangzhou_instance_ipv6_addresses" {
   value       = alicloud_instance.hangzhou.ipv6_addresses
 }
 
-output "hangzhou_test_instance_private_ip" {
-  description = "杭州子网测试 ECS 私网 IPv4"
-  value       = try(alicloud_instance.hangzhou_test[0].primary_ip_address, "")
-}
-
-output "hangzhou_test_ssh_command" {
-  description = "杭州子网测试 ECS SSH 快捷登录命令"
-  value       = try("ssh root@${alicloud_instance.hangzhou_test[0].public_ip}", "")
-}
-
 # --- 上海输出 ---
 
 output "shanghai_vpc_id" {
@@ -127,16 +117,6 @@ output "shanghai_ssh_command" {
 output "shanghai_instance_ipv6_addresses" {
   description = "上海网关 ECS 自动分配的 IPv6 地址列表"
   value       = alicloud_instance.shanghai.ipv6_addresses
-}
-
-output "shanghai_test_instance_private_ip" {
-  description = "上海子网测试 ECS 私网 IPv4"
-  value       = try(alicloud_instance.shanghai_test[0].primary_ip_address, "")
-}
-
-output "shanghai_test_ssh_command" {
-  description = "上海子网测试 ECS SSH 快捷登录命令"
-  value       = try("ssh root@${alicloud_instance.shanghai_test[0].public_ip}", "")
 }
 
 # --- 深圳输出 ---
@@ -196,16 +176,6 @@ output "shenzhen_instance_ipv6_addresses" {
   value       = alicloud_instance.shenzhen.ipv6_addresses
 }
 
-output "shenzhen_test_instance_private_ip" {
-  description = "深圳子网测试 ECS 私网 IPv4"
-  value       = try(alicloud_instance.shenzhen_test[0].primary_ip_address, "")
-}
-
-output "shenzhen_test_ssh_command" {
-  description = "深圳子网测试 ECS SSH 快捷登录命令"
-  value       = try("ssh root@${alicloud_instance.shenzhen_test[0].public_ip}", "")
-}
-
 # --- 聚合总览 ---
 
 output "network_topology_summary" {
@@ -226,11 +196,6 @@ output "network_topology_summary" {
       public_ip       = alicloud_instance.hangzhou.public_ip
       ipv6_addresses  = alicloud_instance.hangzhou.ipv6_addresses
       ssh_command     = "ssh root@${alicloud_instance.hangzhou.public_ip}"
-      test_instance = {
-        private_ip  = try(alicloud_instance.hangzhou_test[0].primary_ip_address, "")
-        public_ip   = try(alicloud_instance.hangzhou_test[0].public_ip, "")
-        ssh_command = try("ssh root@${alicloud_instance.hangzhou_test[0].public_ip}", "")
-      }
     }
     shanghai = {
       region          = var.region_shanghai
@@ -247,11 +212,6 @@ output "network_topology_summary" {
       public_ip       = alicloud_instance.shanghai.public_ip
       ipv6_addresses  = alicloud_instance.shanghai.ipv6_addresses
       ssh_command     = "ssh root@${alicloud_instance.shanghai.public_ip}"
-      test_instance = {
-        private_ip  = try(alicloud_instance.shanghai_test[0].primary_ip_address, "")
-        public_ip   = try(alicloud_instance.shanghai_test[0].public_ip, "")
-        ssh_command = try("ssh root@${alicloud_instance.shanghai_test[0].public_ip}", "")
-      }
     }
     shenzhen = {
       region          = var.region_shenzhen
@@ -268,11 +228,6 @@ output "network_topology_summary" {
       public_ip       = alicloud_instance.shenzhen.public_ip
       ipv6_addresses  = alicloud_instance.shenzhen.ipv6_addresses
       ssh_command     = "ssh root@${alicloud_instance.shenzhen.public_ip}"
-      test_instance = {
-        private_ip  = try(alicloud_instance.shenzhen_test[0].primary_ip_address, "")
-        public_ip   = try(alicloud_instance.shenzhen_test[0].public_ip, "")
-        ssh_command = try("ssh root@${alicloud_instance.shenzhen_test[0].public_ip}", "")
-      }
     }
   }
 }

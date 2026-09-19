@@ -5,7 +5,6 @@
 2. **安全层**：各地域独立的**全通安全组**（放通一切 IPv4 与 IPv6 进出端口协议），导入本地 SSH 公钥。
 3. **计算层**：
    - **WireGuard 网关 ECS 实例**：极低成本抢占式实例（**节省停机中断模式**、**ESSD Entry 20GB 系统盘**、**自动分配公网 IPv4 + 公网 IPv6**，按流量计费）。
-   - **子网测试 ECS 实例**：每地域各 1 台（不分配 IPv6），用于验证跨地域透明内网 IPv4 互相访问。
 
 ---
 
@@ -17,8 +16,8 @@
 ├── versions.tf               # 声明 Terraform 版本及 alicloud provider 依赖
 ├── providers.tf              # 配置多地域 Provider 别名 (Alias)
 ├── variables.tf              # 声明入参变量 (地域代码、网段 CIDR、实例规格、SSH 密钥、IPv6 带宽等)
-├── main.tf                   # 核心资源编排 (网络、路由、安全组、密钥对、网关与测试 ECS)
-├── outputs.tf                # 定义执行成功后的输出信息 (各资源 ID、公网 IP、IPv6、测试机登录命令)
+├── main.tf                   # 核心资源编排 (网络、路由、安全组、密钥对、WireGuard 网关 ECS)
+├── outputs.tf                # 定义执行成功后的输出信息 (各资源 ID、公网 IP、IPv6、网关登录命令)
 ├── terraform.tfvars.example  # 变量覆盖样例文件
 ├── WIREGUARD_MESH.md         # WireGuard 全互联跨地域跨 VPC 组网实战指南 (IPv4 Underlay)
 ├── WIREGUARD_HUB_SPOKE_GATEWAY.md # WireGuard Hub & Spoke 星型集中出网与分支中转实战指南 (深圳中心+双级NAT)
@@ -32,11 +31,11 @@
 
 ## 资源规划与网络拓扑
 
-| 地域 | 地域代码 (`region`) | VPC 网段 | 子网 (VSwitch) 网段 | 可用区策略 | 网关实例配置 (WG Gateway) | 测试机配置 (Test Instance) |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **杭州** | `cn-hangzhou` | `192.168.0.0/16` | `192.168.10.0/24` | 动态过滤 (Spot+ESSD Entry) | 抢占式 + 20G ESSD + IPv4/IPv6 双公网 | 抢占式 + 20G ESSD + 仅公网 IPv4 |
-| **上海** | `cn-shanghai` | `192.168.0.0/16` | `192.168.20.0/24` | 动态过滤 (Spot+ESSD Entry) | 抢占式 + 20G ESSD + IPv4/IPv6 双公网 | 抢占式 + 20G ESSD + 仅公网 IPv4 |
-| **深圳** | `cn-shenzhen` | `192.168.0.0/16` | `192.168.30.0/24` | 动态过滤 (Spot+ESSD Entry) | 抢占式 + 20G ESSD + IPv4/IPv6 双公网 | 抢占式 + 20G ESSD + 仅公网 IPv4 |
+| 地域 | 地域代码 (`region`) | VPC 网段 | 子网 (VSwitch) 网段 | 可用区策略 | 网关实例配置 (WG Gateway) |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **杭州** | `cn-hangzhou` | `192.168.0.0/16` | `192.168.10.0/24` | 动态过滤 (Spot+ESSD Entry) | 抢占式 + 20G ESSD + IPv4/IPv6 双公网 |
+| **上海** | `cn-shanghai` | `192.168.0.0/16` | `192.168.20.0/24` | 动态过滤 (Spot+ESSD Entry) | 抢占式 + 20G ESSD + IPv4/IPv6 双公网 |
+| **深圳** | `cn-shenzhen` | `192.168.0.0/16` | `192.168.30.0/24` | 动态过滤 (Spot+ESSD Entry) | 抢占式 + 20G ESSD + IPv4/IPv6 双公网 |
 
 ---
 
@@ -102,7 +101,7 @@ terraform validate
 terraform plan
 ```
 
-在终端输出中，你将看到预计纳管 **57 个云端资源**（每地域 19 个资源：VPC、VSwitch、IPv4 网关、IPv6 网关、IPv6 出网带宽、自定义路由表、交换机绑定、默认 IPv4 公网路由、默认 IPv6 公网路由、2 条跨地域引流路由、安全组、2 条 IPv4 安全组规则、2 条 IPv6 安全组规则、SSH 密钥对、WireGuard 网关 ECS、测试 ECS）。
+在终端输出中，你将看到预计纳管 **54 个云端资源**（每地域 18 个资源：VPC、VSwitch、IPv4 网关、IPv6 网关、IPv6 出网带宽、自定义路由表、交换机绑定、默认 IPv4 公网路由、默认 IPv6 公网路由、2 条跨地域引流路由、安全组、2 条 IPv4 安全组规则、2 条 IPv6 安全组规则、SSH 密钥对、WireGuard 网关 ECS）。
 
 ---
 

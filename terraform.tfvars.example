@@ -41,6 +41,3 @@ internet_max_bandwidth_out = 5
 
 # WireGuard 网关分配的公网 IPv6 出网带宽上限 (Mbps，按流量计费)
 ipv6_internet_bandwidth = 5
-
-# 每个地域子网内创建的测试 ECS 实例数量（不分配 IPv6，用于验证跨地域透明 IPv4 互通）
-test_instance_count = 1
