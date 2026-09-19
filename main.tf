@@ -73,6 +73,10 @@ resource "alicloud_vpc_ipv6_gateway" "hangzhou" {
   provider          = alicloud.hangzhou
   vpc_id            = alicloud_vpc.hangzhou.id
   ipv6_gateway_name = "${var.project_name}-ipv6gw-hangzhou"
+
+  timeouts {
+    delete = "10m"
+  }
 }
 
 # 杭州自定义公共路由表
@@ -219,6 +223,9 @@ resource "alicloud_instance" "hangzhou" {
               chmod a+x /usr/local/bin/ecs-metadata
               EOT
   )
+  depends_on = [
+    alicloud_vpc_ipv6_gateway.hangzhou
+  ]
 }
 
 # 查询杭州网关实例关联的 IPv6 地址 ID
@@ -235,6 +242,10 @@ resource "alicloud_vpc_ipv6_internet_bandwidth" "hangzhou" {
   ipv6_gateway_id      = alicloud_vpc_ipv6_gateway.hangzhou.ipv6_gateway_id
   bandwidth            = var.ipv6_internet_bandwidth
   internet_charge_type = "PayByTraffic"
+
+  depends_on = [
+    alicloud_instance.hangzhou
+  ]
 }
 
 
@@ -295,6 +306,10 @@ resource "alicloud_vpc_ipv6_gateway" "shanghai" {
   provider          = alicloud.shanghai
   vpc_id            = alicloud_vpc.shanghai.id
   ipv6_gateway_name = "${var.project_name}-ipv6gw-shanghai"
+
+  timeouts {
+    delete = "10m"
+  }
 }
 
 # 上海自定义公共路由表
@@ -441,6 +456,9 @@ resource "alicloud_instance" "shanghai" {
               chmod a+x /usr/local/bin/ecs-metadata
               EOT
   )
+  depends_on = [
+    alicloud_vpc_ipv6_gateway.shanghai
+  ]
 }
 
 # 查询上海网关实例关联的 IPv6 地址 ID
@@ -457,6 +475,10 @@ resource "alicloud_vpc_ipv6_internet_bandwidth" "shanghai" {
   ipv6_gateway_id      = alicloud_vpc_ipv6_gateway.shanghai.ipv6_gateway_id
   bandwidth            = var.ipv6_internet_bandwidth
   internet_charge_type = "PayByTraffic"
+
+  depends_on = [
+    alicloud_instance.shanghai
+  ]
 }
 
 
@@ -517,6 +539,10 @@ resource "alicloud_vpc_ipv6_gateway" "shenzhen" {
   provider          = alicloud.shenzhen
   vpc_id            = alicloud_vpc.shenzhen.id
   ipv6_gateway_name = "${var.project_name}-ipv6gw-shenzhen"
+
+  timeouts {
+    delete = "10m"
+  }
 }
 
 # 深圳自定义公共路由表
@@ -663,6 +689,9 @@ resource "alicloud_instance" "shenzhen" {
               chmod a+x /usr/local/bin/ecs-metadata
               EOT
   )
+  depends_on = [
+    alicloud_vpc_ipv6_gateway.shenzhen
+  ]
 }
 
 # 查询深圳网关实例关联的 IPv6 地址 ID
@@ -679,6 +708,10 @@ resource "alicloud_vpc_ipv6_internet_bandwidth" "shenzhen" {
   ipv6_gateway_id      = alicloud_vpc_ipv6_gateway.shenzhen.ipv6_gateway_id
   bandwidth            = var.ipv6_internet_bandwidth
   internet_charge_type = "PayByTraffic"
+
+  depends_on = [
+    alicloud_instance.shenzhen
+  ]
 }
 
 
