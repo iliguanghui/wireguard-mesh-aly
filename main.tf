@@ -66,6 +66,9 @@ resource "alicloud_vpc_ipv4_gateway" "hangzhou" {
   ipv4_gateway_name        = "${var.project_name}-gw-hangzhou"
   ipv4_gateway_description = "Managed by Terraform - Hangzhou IPv4 Gateway (Centralized Mode)"
   enabled                  = true
+  timeouts {
+    delete = "30s"
+  }
 }
 
 # 杭州 IPv6 网关（开启公网 IPv6 通信底座）
@@ -75,7 +78,7 @@ resource "alicloud_vpc_ipv6_gateway" "hangzhou" {
   ipv6_gateway_name = "${var.project_name}-ipv6gw-hangzhou"
 
   timeouts {
-    delete = "10m"
+    delete = "30s"
   }
 }
 
@@ -137,6 +140,10 @@ resource "alicloud_security_group" "hangzhou" {
   vpc_id              = alicloud_vpc.hangzhou.id
   security_group_name = "${var.project_name}-sg-hangzhou"
   description         = "Managed by Terraform - Hangzhou Security Group (Allow All)"
+
+  timeouts {
+    delete = "30s"
+  }
 }
 
 # 杭州安全组规则：入方向 IPv4 全放行
@@ -196,6 +203,9 @@ resource "alicloud_key_pair" "hangzhou" {
   provider      = alicloud.hangzhou
   key_pair_name = "${var.project_name}-key-hangzhou"
   public_key    = var.ssh_public_key
+  timeouts {
+    delete = "30s"
+  }
 }
 
 # 杭州 WireGuard 网关 ECS 实例 (分配 IPv6 + 节省停机模式 + ESSD Entry + 自动分配公网 IPv4)
@@ -299,6 +309,9 @@ resource "alicloud_vpc_ipv4_gateway" "shanghai" {
   ipv4_gateway_name        = "${var.project_name}-gw-shanghai"
   ipv4_gateway_description = "Managed by Terraform - Shanghai IPv4 Gateway (Centralized Mode)"
   enabled                  = true
+  timeouts {
+    delete = "30s"
+  }
 }
 
 # 上海 IPv6 网关（开启公网 IPv6 通信底座）
@@ -308,7 +321,7 @@ resource "alicloud_vpc_ipv6_gateway" "shanghai" {
   ipv6_gateway_name = "${var.project_name}-ipv6gw-shanghai"
 
   timeouts {
-    delete = "10m"
+    delete = "30s"
   }
 }
 
@@ -370,6 +383,10 @@ resource "alicloud_security_group" "shanghai" {
   vpc_id              = alicloud_vpc.shanghai.id
   security_group_name = "${var.project_name}-sg-shanghai"
   description         = "Managed by Terraform - Shanghai Security Group (Allow All)"
+
+  timeouts {
+    delete = "30s"
+  }
 }
 
 # 上海安全组规则：入方向 IPv4 全放行
@@ -429,6 +446,9 @@ resource "alicloud_key_pair" "shanghai" {
   provider      = alicloud.shanghai
   key_pair_name = "${var.project_name}-key-shanghai"
   public_key    = var.ssh_public_key
+  timeouts {
+    delete = "30s"
+  }
 }
 
 # 上海 WireGuard 网关 ECS 实例 (分配 IPv6 + 节省停机模式 + ESSD Entry + 自动分配公网 IPv4)
@@ -532,6 +552,9 @@ resource "alicloud_vpc_ipv4_gateway" "shenzhen" {
   ipv4_gateway_name        = "${var.project_name}-gw-shenzhen"
   ipv4_gateway_description = "Managed by Terraform - Shenzhen IPv4 Gateway (Centralized Mode)"
   enabled                  = true
+  timeouts {
+    delete = "30s"
+  }
 }
 
 # 深圳 IPv6 网关（开启公网 IPv6 通信底座）
@@ -541,7 +564,7 @@ resource "alicloud_vpc_ipv6_gateway" "shenzhen" {
   ipv6_gateway_name = "${var.project_name}-ipv6gw-shenzhen"
 
   timeouts {
-    delete = "10m"
+    delete = "30s"
   }
 }
 
@@ -603,6 +626,10 @@ resource "alicloud_security_group" "shenzhen" {
   vpc_id              = alicloud_vpc.shenzhen.id
   security_group_name = "${var.project_name}-sg-shenzhen"
   description         = "Managed by Terraform - Shenzhen Security Group (Allow All)"
+
+  timeouts {
+    delete = "30s"
+  }
 }
 
 # 深圳安全组规则：入方向 IPv4 全放行
@@ -662,6 +689,9 @@ resource "alicloud_key_pair" "shenzhen" {
   provider      = alicloud.shenzhen
   key_pair_name = "${var.project_name}-key-shenzhen"
   public_key    = var.ssh_public_key
+  timeouts {
+    delete = "30s"
+  }
 }
 
 # 深圳 WireGuard 网关 ECS 实例 (分配 IPv6 + 节省停机模式 + ESSD Entry + 自动分配公网 IPv4)
